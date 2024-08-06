@@ -150,7 +150,7 @@ class Ecow
 
         return $model;
     }
-    
+
     public function getAttributes(mixed $model): array
     {
         $hiddenAttributes = $model->getHidden();
