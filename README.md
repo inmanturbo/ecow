@@ -19,6 +19,12 @@ You can install the package via composer:
 composer require inmanturbo/ecow
 ```
 
+You can run the migrations with:
+
+```bash
+php artisan ecow:migrate
+```
+
 You can publish and run the migrations with:
 
 ```bash
@@ -36,13 +42,35 @@ This is the contents of the published config file:
 
 ```php
 return [
+    /*
+     * The model used to store saved models.
+     */
+    'model' => \Inmanturbo\Ecow\Models\SavedModel::class,
+
+    /*
+     * After this amount of days, the records in `saved_models` will be deleted
+     *
+     * This functionality uses Laravel's native pruning feature.
+     */
+    'prune_after_days' => 365 * 1000000, // wouldn't delete this in a million years
+
+    /*
+     * The table name used to store saved models.
+     */
+    'saved_models_table' => 'saved_models',
+
+    /*
+     * The Models that should be saved by default.
+     *
+     * You can use '*' to save all models.
+     */
+    'saved_models' => '*',
+
+    /*
+     * The Models that should not be saved by default.
+     */
+    'unsaved_models' => [],
 ];
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="ecow-views"
 ```
 
 ## Usage
