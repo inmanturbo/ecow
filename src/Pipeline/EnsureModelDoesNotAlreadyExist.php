@@ -3,7 +3,6 @@
 namespace Inmanturbo\Ecow\Pipeline;
 
 use Closure;
-use Inmanturbo\Ecow\Facades\Ecow;
 
 class CreateModel
 {
@@ -17,7 +16,6 @@ class CreateModel
         if ($model->where($model->getKeyName(), $model->getKey())->exists()) {
             return;
         }
-
 
         return $next($data);
     }
