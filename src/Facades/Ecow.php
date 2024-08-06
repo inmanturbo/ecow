@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Facade;
  * @method static void addModelBeingSaved($model)
  * @method static void removeModelBeingSaved($model)
  * @method static void clearModelsBeingSaved()
+ * @method static void rememberModel($model)
+ * @method static void forgetModel($model)
  *
  * @see \Inmanturbo\Ecow\Ecow
  */

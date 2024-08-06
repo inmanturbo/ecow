@@ -18,6 +18,11 @@ return [
      */
     'saved_models_table' => 'saved_models',
 
+    'migration_tables' => [
+        'saved_models',
+        'saved_model_snapshots',
+    ],
+
     /*
      * The Models that should be saved by default.
      *

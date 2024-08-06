@@ -2,6 +2,8 @@
 
 namespace Inmanturbo\Ecow;
 
+use Illuminate\Support\Facades\DB;
+
 class Ecow
 {
     public bool $isReplaying = false;
@@ -12,11 +14,11 @@ class Ecow
     {
         $modelClass = config('ecow.model');
 
-        if (! is_subclass_of($modelClass, Models\SavedModel::class)) {
-            throw Exceptions\InvalidSavedModel::create($modelClass);
+        if ($modelClass === Models\SavedModel::class || is_subclass_of($modelClass, Models\SavedModel::class)) {
+            return $modelClass;
         }
 
-        return $modelClass;
+        throw Exceptions\InvalidSavedModel::create($modelClass);
     }
 
     public function newModel(): Models\SavedModel
@@ -37,14 +39,26 @@ class Ecow
         return $this->savedModels($model)->orderBy('model_version');
     }
 
-    public function savedModelVersion(mixed $model): ?Models\SavedModel
+    public function savedModelVersion(mixed $model): int
     {
-        return $this->savedModels($model)->latest('model_version')->first();
+        return $this->savedModels($model)->latest('model_version')->first()->model_version;
+    }
+
+    public function modelVersion($model): int
+    {
+        return $this->snapshots($model)->latest('model_version')->first()->model_version ?? 0;
+    }
+
+    public function snapshots(mixed $model): \Illuminate\Database\Query\Builder
+    {
+        return DB::table('saved_model_snapshots')
+            ->where('model', $model->getMorphClass())
+            ->where('key', $model->uuid ?? $model->getKey());
     }
 
     public function getNextModelVersion(mixed $model): int
     {
-        return $this->savedModelVersion($model)?->model_version + 1 ?? 1;
+        return $this->savedModelVersion($model) + 1 ?? 1;
     }
 
     public function markReplaying(): void
@@ -98,5 +112,28 @@ class Ecow
     public function clearModelsBeingSaved(): void
     {
         $this->modelsBeingSaved = [];
+    }
+
+    public function snapshotModel(mixed $model): void
+    {
+        DB::table('saved_model_snapshots')->insert([
+            'model' => $model->getMorphClass(),
+            'key' => $model->uuid ?? $model->getKey(),
+            'model_version' => Ecow::savedModelVersion($model),
+        ]);
+
+    }
+
+    public function retrieveModel(mixed $model): mixed
+    {
+        $properties = $this->savedModelVersions($model)
+            ->where('model_version', '>', $this->modelVersion($model))
+            ->get(['property', 'value']);
+        
+        foreach ($properties as $version) {
+            $model->forceFill([$version->property => $version->value]);
+        }
+
+        return $model;
     }
 }

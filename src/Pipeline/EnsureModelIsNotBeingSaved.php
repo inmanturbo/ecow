@@ -3,6 +3,7 @@
 namespace App;
 
 use Closure;
+use Inmanturbo\Ecow\Facades\Ecow;
 
 class EnsureModelIsNotBeingSaved
 {
@@ -11,10 +12,8 @@ class EnsureModelIsNotBeingSaved
      */
     public function __invoke($data, Closure $next)
     {
-        if (app()->has('updatedModel')) {
-            if(app()['updatedModel'] === $data->model) {
-                return;
-            }
+        if (Ecow::isModelBeingSaved($data->model)) {
+            return;
         }
 
         return $next($data);
