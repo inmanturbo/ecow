@@ -9,6 +9,8 @@
 
 <img src="art/ecow.svg" width="200px" alt="ecow" />
 
+Artwork by DALL-E
+
 ## Installation
 
 You can install the package via composer:

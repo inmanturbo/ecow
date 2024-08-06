@@ -8,12 +8,20 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('ecow_table', function (Blueprint $table) {
+        Schema::create('saved_models', function (Blueprint $table) {
             $table->id();
-
-            // add fields
+            $table->string('event_version')->default('1.0.0');
+            $table->string('event');
+            $table->string('model');
+            $table->string('key', 40);
+            $table->bigInteger('model_version')->default(1);
+            $table->string('property');
+            $table->longText('value');
+            $table->json('values');
 
             $table->timestamps();
+
+            $table->unique(['model_version', 'key']);
         });
     }
 };
