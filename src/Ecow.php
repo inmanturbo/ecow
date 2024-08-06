@@ -2,9 +2,9 @@
 
 namespace Inmanturbo\Ecow;
 
-class Ecow {
-
-    public function modelClass() 
+class Ecow
+{
+    public function modelClass()
     {
         $modelClass = config('ecow.model');
 
@@ -15,7 +15,7 @@ class Ecow {
         return $modelClass;
     }
 
-    public function newModel() 
+    public function newModel()
     {
         $modelClass = $this->modelClass();
 

@@ -11,5 +11,5 @@ return [
      *
      * This functionality uses Laravel's native pruning feature.
      */
-    'prune_after_days' => 365*1000000, // wouldn't delete this in a million years 
+    'prune_after_days' => 365 * 1000000, // wouldn't delete this in a million years
 ];
