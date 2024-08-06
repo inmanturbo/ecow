@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Support\Facades\DB;
 use Inmanturbo\Ecow\Facades\Ecow;
 
-class StoreUpdatedModels
+class StoreSavedModels
 {
     /**
      * Invoke the class instance.

@@ -5,7 +5,7 @@ namespace Inmanturbo\Ecow\Pipeline;
 use Closure;
 use Inmanturbo\Ecow\Facades\Ecow;
 
-class UpdateModel
+class DeleteModel
 {
     /**
      * Invoke the class instance.
@@ -16,9 +16,7 @@ class UpdateModel
 
         Ecow::addModelBeingSaved($model);
 
-        $model = Ecow::retrieveModel($model);
-
-        $model->save();
+        $model->delete();
 
         Ecow::removeModelBeingSaved($model);
 
