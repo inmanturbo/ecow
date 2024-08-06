@@ -5,7 +5,7 @@ namespace Inmanturbo\Ecow\Pipeline;
 use Closure;
 use Inmanturbo\Ecow\Facades\Ecow;
 
-class CreateModel
+class EnsureModelDoesNotAlreadyExist
 {
     /**
      * Invoke the class instance.

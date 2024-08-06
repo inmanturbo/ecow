@@ -2,7 +2,18 @@
 
 namespace Inmanturbo\Ecow;
 
+use App\EnsureModelIsNotBeingSaved;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Pipeline;
+use Inmanturbo\Ecow\Pipeline\CreateModel;
+use Inmanturbo\Ecow\Pipeline\CreateSavedModel;
+use Inmanturbo\Ecow\Pipeline\DeleteModel;
+use Inmanturbo\Ecow\Pipeline\EnsureEventsAreNotReplaying;
+use Inmanturbo\Ecow\Pipeline\EnsureModelDoesNotAlreadyExist;
+use Inmanturbo\Ecow\Pipeline\StoreDeletedModel;
+use Inmanturbo\Ecow\Pipeline\StoreSavedModels;
+use Inmanturbo\Ecow\Pipeline\UpdateModel;
 
 class Ecow
 {
@@ -152,5 +163,64 @@ class Ecow
         $attributes = $cloned->attributesToArray();
 
         return $attributes;
+    }
+
+    public function bootListeners(): void
+    {
+        $this->listenForCreatingEvents();
+        $this->listenForUpdatingEvents();
+        $this->listenForDeletingEvents();
+    }
+
+    public function listenForUpdatingEvents(): void
+    {
+        $this->listen('eloquent.updating*', [
+            EnsureEventsAreNotReplaying::class,
+            EnsureModelIsNotBeingSaved::class,
+            StoreSavedModels::class,
+            UpdateModel::class,
+        ]);
+    }
+
+    public function listenForDeletingEvents(): void
+    {
+        $this->listen('eloquent.deleting*', [
+            EnsureEventsAreNotReplaying::class,
+            EnsureModelIsNotBeingSaved::class,
+            StoreDeletedModel::class,
+            DeleteModel::class,
+        ]);
+    }
+
+    public function listenForCreatingEvents(): void
+    {
+        $this->listen('eloquent.creating*', [
+            EnsureEventsAreNotReplaying::class,
+            EnsureModelIsNotBeingSaved::class,
+            EnsureModelDoesNotAlreadyExist::class,
+            CreateSavedModel::class,
+            CreateModel::class,
+        ]);
+    }
+
+    public function listen(string $event, array $pipes): void
+    {
+        app()->bind("ecow.{$event}", fn () => collect($pipes));
+
+        Event::listen($event, function(string $event, array $payload) {
+            return $this->eventPipeline($event, $payload);
+        });
+    }
+
+    protected function eventPipeline(string $event, array $payload): mixed
+    {
+        $data = [
+            'event' => $event,
+            'model' => $payload[0],
+        ];
+
+        $pipeline = Pipeline::send($data)->through(app("ecow.{$event}"))->thenReturn();
+
+        return $pipeline;
     }
 }
