@@ -9,7 +9,7 @@ This is where your description should go. Limit it to a paragraph or two. Consid
 
 ## Support us
 
-<img src="art/ecow.jpg" width="419px" alt="ecow" />
+<img src="art/ecow.svg" width="419px" alt="ecow" />
 
 ## Installation
 
