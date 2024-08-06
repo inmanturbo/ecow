@@ -2,9 +2,9 @@
 
 namespace Inmanturbo\Ecow;
 
-use App\EnsureModelIsNotBeingSaved;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Pipeline;
 use Inmanturbo\Ecow\Commands\EcowCommand;
 use Inmanturbo\Ecow\Pipeline\CreateModel;
@@ -37,26 +37,6 @@ class EcowServiceProvider extends PackageServiceProvider
 
     public function packageBooted()
     {
-        Event::listen('eloquent.creating*', function(string $event, array $payload) {
-            $data = [
-                'event' => $event,
-                'model' => $payload[0],
-            ];
-
-            app()->bind('ecow.eloquent.creating*', fn () => Collection::make([
-                    EnsureEventsAreNotReplaying::class,
-                    EnsureModelIsNotBeingSaved::class,
-                    EnsureModelDoesNotAlreadyExist::class,
-                    CreateSavedModel::class,
-                    CreateModel::class,
-                ])
-            );
-
-            $pipeline = Pipeline::send((object)$data)->through(app('ecow.eloquent.creating*'))->then(function ($data) {
-                return false;
-            });
-
-            return $pipeline;
-        });
+        Facades\Ecow::bootListeners();
     }
 }

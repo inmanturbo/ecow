@@ -20,6 +20,8 @@ class UpdateModel
 
         $model->save();
 
+        Ecow::snapshotModel($model);
+
         Ecow::removeModelBeingSaved($model);
 
         return $next($data);

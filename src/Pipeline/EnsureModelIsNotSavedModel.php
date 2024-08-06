@@ -5,14 +5,15 @@ namespace Inmanturbo\Ecow\Pipeline;
 use Closure;
 use Inmanturbo\Ecow\Facades\Ecow;
 
-class EnsureModelIsNotBeingSaved
+class EnsureModelIsNotSavedModel
 {
     /**
      * Create a new class instance.
      */
     public function __invoke($data, Closure $next)
     {
-        if (Ecow::isModelBeingSaved($data->model)) {
+
+        if ($data->model instanceof (Ecow::modelClass())) {
             return;
         }
 
