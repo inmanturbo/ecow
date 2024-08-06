@@ -2,15 +2,7 @@
 
 namespace Inmanturbo\Ecow;
 
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Facade;
-use Illuminate\Support\Facades\Pipeline;
 use Inmanturbo\Ecow\Commands\EcowCommand;
-use Inmanturbo\Ecow\Pipeline\CreateModel;
-use Inmanturbo\Ecow\Pipeline\CreateSavedModel;
-use Inmanturbo\Ecow\Pipeline\EnsureEventsAreNotReplaying;
-use Inmanturbo\Ecow\Pipeline\EnsureModelDoesNotAlreadyExist;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 

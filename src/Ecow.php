@@ -212,7 +212,7 @@ class Ecow
     {
         app()->bind("ecow.{$event}", fn () => Collection::make($pipes));
 
-        Event::listen($event, function(string $events, array $payload) use ($event) {
+        Event::listen($event, function (string $events, array $payload) use ($event) {
             return $this->eventPipeline($event, $payload);
         });
     }
