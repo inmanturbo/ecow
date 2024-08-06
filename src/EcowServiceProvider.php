@@ -37,22 +37,22 @@ class EcowServiceProvider extends PackageServiceProvider
 
     public function packageBooted()
     {
-        Event::listen('eloquent.creating*', function(string $event, array $payload) {
+        Event::listen('eloquent.creating*', function (string $event, array $payload) {
             $data = [
                 'event' => $event,
                 'model' => $payload[0],
             ];
 
             app()->bind('ecow.eloquent.creating*', fn () => Collection::make([
-                    EnsureEventsAreNotReplaying::class,
-                    EnsureModelIsNotBeingSaved::class,
-                    EnsureModelDoesNotAlreadyExist::class,
-                    CreateSavedModel::class,
-                    CreateModel::class,
-                ])
+                EnsureEventsAreNotReplaying::class,
+                EnsureModelIsNotBeingSaved::class,
+                EnsureModelDoesNotAlreadyExist::class,
+                CreateSavedModel::class,
+                CreateModel::class,
+            ])
             );
 
-            $pipeline = Pipeline::send((object)$data)->through(app('ecow.eloquent.creating*'))->then(function ($data) {
+            $pipeline = Pipeline::send((object) $data)->through(app('ecow.eloquent.creating*'))->then(function ($data) {
                 return false;
             });
 

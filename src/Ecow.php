@@ -148,7 +148,7 @@ class Ecow
 
         return $model;
     }
-    
+
     public function getAttributes(mixed $model): array
     {
         $hiddenAttributes = $model->getHidden();
@@ -207,7 +207,7 @@ class Ecow
     {
         app()->bind("ecow.{$event}", fn () => collect($pipes));
 
-        Event::listen($event, function(string $event, array $payload) {
+        Event::listen($event, function (string $event, array $payload) {
             return $this->eventPipeline($event, $payload);
         });
     }
