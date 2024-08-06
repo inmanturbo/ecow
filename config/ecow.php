@@ -20,6 +20,8 @@ return [
 
     /*
      * The Models that should be saved by default.
+     * 
+     * You can use '*' to save all models.
      */
     'saved_models' => '*',
 
