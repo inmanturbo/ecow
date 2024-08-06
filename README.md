@@ -7,7 +7,7 @@
 
 ## Eloquent copy-on-write: automatically copy all model changes to a seperate table.
 
-<img src="art/ecow.svg" width="419px" alt="ecow" />
+<img src="art/ecow.svg" width="200px" alt="ecow" />
 
 ## Installation
 
