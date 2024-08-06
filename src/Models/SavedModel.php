@@ -54,6 +54,11 @@ class SavedModel extends Model
         return $restoredModel;
     }
 
+    public function restoreQuietly(): Model
+    {
+        return self::withoutEvents(fn () => $this->restore());
+    }
+    
     /** @return class-string<Model> */
     protected function getModelClass(): string
     {
