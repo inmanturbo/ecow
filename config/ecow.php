@@ -13,5 +13,18 @@ return [
      */
     'prune_after_days' => 365 * 1000000, // wouldn't delete this in a million years
 
+    /*
+     * The table name used to store saved models.
+     */
     'saved_models_table' => 'saved_models',
+
+    /*
+     * The Models that should be saved by default.
+     */
+    'saved_models' => '*',
+
+    /*
+     * The Models that should not be saved by default.
+     */
+    'unsaved_models' => [],
 ];
