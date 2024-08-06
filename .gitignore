@@ -9,3 +9,4 @@ phpstan.neon
 testbench.yaml
 vendor
 node_modules
+database/migrations/2024_07_07_131035_create_saved_models_table.php
