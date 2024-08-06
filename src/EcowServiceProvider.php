@@ -2,9 +2,9 @@
 
 namespace Inmanturbo\Ecow;
 
+use Inmanturbo\Ecow\Commands\EcowCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Inmanturbo\Ecow\Commands\EcowCommand;
 
 class EcowServiceProvider extends PackageServiceProvider
 {
