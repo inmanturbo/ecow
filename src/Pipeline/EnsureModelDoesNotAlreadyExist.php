@@ -3,7 +3,6 @@
 namespace Inmanturbo\Ecow\Pipeline;
 
 use Closure;
-use Inmanturbo\Ecow\Facades\Ecow;
 
 class EnsureModelDoesNotAlreadyExist
 {
@@ -17,7 +16,6 @@ class EnsureModelDoesNotAlreadyExist
         if ($model->where($model->getKeyName(), $model->getKey())->exists()) {
             return;
         }
-
 
         return $next($data);
     }
