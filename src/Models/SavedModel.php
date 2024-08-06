@@ -58,7 +58,7 @@ class SavedModel extends Model
     {
         return self::withoutEvents(fn () => $this->restore());
     }
-    
+
     /** @return class-string<Model> */
     protected function getModelClass(): string
     {
