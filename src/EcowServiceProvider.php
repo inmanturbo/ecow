@@ -18,8 +18,7 @@ class EcowServiceProvider extends PackageServiceProvider
         $package
             ->name('ecow')
             ->hasConfigFile()
-            ->hasViews()
-            ->hasMigration('create_ecow_table')
+            ->hasMigration('2024_07_07_131035_create_saved_models_table')
             ->hasCommand(EcowCommand::class);
     }
 }
