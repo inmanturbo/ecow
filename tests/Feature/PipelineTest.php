@@ -12,14 +12,17 @@ beforeEach(function () {
         $table->timestamps();
     });
 
-    $this->model = new class extends \Illuminate\Database\Eloquent\Model {
+    $this->model = new class extends \Illuminate\Database\Eloquent\Model
+    {
         use HasUuids;
+
         protected $table = 'users';
+
         protected $guarded = [];
 
         /**
-        * Generate a new UUID for the model.
-        */
+         * Generate a new UUID for the model.
+         */
         public function newUniqueId(): string
         {
             return (string) str()->ulid();
@@ -53,7 +56,7 @@ it('can store pending model changes', function () {
 
     $this->model->name = 'Jane Doe';
 
-    $storesUpdatedModels = new \Inmanturbo\Ecow\Pipeline\StoreUpdatedModels();
+    $storesUpdatedModels = new \Inmanturbo\Ecow\Pipeline\StoreUpdatedModels;
 
     $data = (object) [
         'model' => $this->model,
@@ -76,7 +79,7 @@ it('can store pending model changes', function () {
         'value' => 'Jane Doe',
     ]);
 
-    $updatesModel = new \Inmanturbo\Ecow\Pipeline\UpdateModel();
+    $updatesModel = new \Inmanturbo\Ecow\Pipeline\UpdateModel;
 
     $updatesModel($data, $next);
 

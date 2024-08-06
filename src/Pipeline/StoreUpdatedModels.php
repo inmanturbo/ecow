@@ -8,7 +8,6 @@ use Inmanturbo\Ecow\Facades\Ecow;
 
 class StoreUpdatedModels
 {
-
     /**
      * Invoke the class instance.
      */
@@ -30,7 +29,7 @@ class StoreUpdatedModels
         DB::transaction(function () use ($model, $attributes, $data) {
 
             Ecow::snapshotModel($model);
-            
+
             foreach ($model->getDirty() as $key => $value) {
                 $savedModel = Ecow::modelClass()::create([
                     'event' => (string) str()->of($data->event)->before(':'),

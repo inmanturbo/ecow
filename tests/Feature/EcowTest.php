@@ -12,12 +12,15 @@ it('can mark replaying', function () {
 });
 
 it('can remember models being saved', function () {
-    $model = new class {
+    $model = new class
+    {
         public $uuid = '123';
+
         public function getKey()
         {
             return '123';
         }
+
         public function getMorphClass()
         {
             return 'test';

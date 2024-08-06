@@ -4,7 +4,6 @@ namespace Inmanturbo\Ecow\Pipeline;
 
 use Closure;
 use Inmanturbo\Ecow\Facades\Ecow;
-use Inmanturbo\Ecow\Models\SavedModel;
 
 class EnsureEventsAreNotReplaying
 {

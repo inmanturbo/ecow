@@ -101,6 +101,7 @@ class Ecow
         if (! $model) {
             return false;
         }
+
         return in_array($model, $this->modelsBeingSaved);
     }
 
@@ -129,7 +130,7 @@ class Ecow
         $properties = $this->savedModelVersions($model)
             ->where('model_version', '>', $this->modelVersion($model))
             ->get(['property', 'value']);
-        
+
         foreach ($properties as $version) {
             $model->forceFill([$version->property => $version->value]);
         }
