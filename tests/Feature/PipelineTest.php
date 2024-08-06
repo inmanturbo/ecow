@@ -56,7 +56,7 @@ it('can store pending model changes', function () {
 
     $this->model->name = 'Jane Doe';
 
-    $storesUpdatedModels = new \Inmanturbo\Ecow\Pipeline\StoreUpdatedModels;
+    $storesUpdatedModels = new \Inmanturbo\Ecow\Pipeline\StoreSavedModels;
 
     $data = (object) [
         'model' => $this->model,

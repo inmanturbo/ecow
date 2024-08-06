@@ -20,6 +20,10 @@ use Illuminate\Support\Facades\Facade;
  * @method static void clearModelsBeingSaved()
  * @method static void rememberModel($model)
  * @method static void forgetModel($model)
+ * @method static bool isModelBeingSaved($model)
+ * @method static mixed retrieveModel($model)
+ * @method static void snapshotModel($model)
+ * @method static void snapshot($model)
  *
  * @see \Inmanturbo\Ecow\Ecow
  */

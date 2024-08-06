@@ -41,7 +41,7 @@ class Ecow
 
     public function savedModelVersion(mixed $model): int
     {
-        return $this->savedModels($model)->latest('model_version')->first()->model_version;
+        return $this->savedModels($model)->latest('model_version')->first()?->model_version ?? 0;
     }
 
     public function modelVersion($model): int
@@ -136,5 +136,21 @@ class Ecow
         }
 
         return $model;
+    }
+    
+    public function getAttributes(mixed $model): array
+    {
+        $hiddenAttributes = $model->getHidden();
+
+        /*
+         * Avoid changing original instance
+         */
+        $cloned = clone $model;
+
+        $cloned->makeVisible($hiddenAttributes);
+
+        $attributes = $cloned->attributesToArray();
+
+        return $attributes;
     }
 }
