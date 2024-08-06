@@ -28,7 +28,7 @@ class TestCase extends Orchestra
     {
         config()->set('database.default', 'testing');
 
-        $migration = include __DIR__.'/../database/migrations/2024_07_07_131035_create_saved_models_table.php';
-        $migration->up();
+        // $migration = include __DIR__.'/../database/migrations/2024_07_07_131035_create_saved_models_table.php';
+        // $migration->up();
     }
 }

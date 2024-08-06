@@ -45,7 +45,7 @@ class EcowCommand extends Command
     protected function tables(): array
     {
         $defaultTables = array_merge(
-            config('ecow.saved_models_table', ['saved_models']),
+            [config('ecow.saved_models_table', 'saved_models')],
             config('ecow.migration_tables', []),
         );
 
