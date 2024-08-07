@@ -5,6 +5,9 @@ namespace Inmanturbo\Ecow;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Pipeline;
+use Illuminate\Support\Facades\Schema;
+use Inmanturbo\Ecow\Events\FinishedReplayingModels;
+use Inmanturbo\Ecow\Events\StartedReplayingModels;
 use Inmanturbo\Ecow\Pipeline\BackfillAutoIncrementedKey;
 use Inmanturbo\Ecow\Pipeline\CreateModel;
 use Inmanturbo\Ecow\Pipeline\CreateSavedModel;
@@ -115,6 +118,8 @@ class Ecow
 
     public function retrieveModel(mixed $model): mixed
     {
+        $model = clone $model;
+
         $attributes = ($snapshot = $this->snapshots($model)
             ->where('model_version', $this->modelVersion($model))
             ->first())?->values ?? json_encode([]);
@@ -226,11 +231,19 @@ class Ecow
 
     public function markReplaying(): void
     {
+        Schema::disableForeignKeyConstraints();
+
+        StartedReplayingModels::dispatch();
+
         $this->isReplaying = true;
     }
 
     public function markNotReplaying(): void
     {
+        Schema::enableForeignKeyConstraints();
+
+        FinishedReplayingModels::dispatch();
+
         $this->isReplaying = false;
     }
 
@@ -276,5 +289,84 @@ class Ecow
     public function clearModelsBeingSaved(): void
     {
         $this->modelsBeingSaved = [];
+    }
+
+    public function asReplay(callable $callback): void
+    {
+        $this->markReplaying();
+
+        $callback();
+
+        $this->markNotReplaying();
+    }
+
+    public function replayModels(): void
+    {
+        $this->asReplay(fn () => $this->replayAllModels());
+    }
+
+    protected function replayAllModels(): void
+    {
+        $modelClasses = $this->modelClass()::distinct('model')
+            ->get(['model']);
+
+
+        foreach ($modelClasses as $modelClass) {
+            $model = $modelClass->model;
+            
+            $this-> info("truncating $model");
+
+
+            $model::truncate();
+        }
+
+        $models = $this->modelClass()::orderBy('created_at')
+            ->get();
+
+        foreach ($models as $event) {
+            $model = (new $event->model);
+
+            $class = get_class($model);
+
+            if($event->model_version === 1) {
+                $columns = $model->getConnection()->getSchemaBuilder()->getColumnListing($model->getTable());
+
+                $attributes = $event->values;
+
+                foreach ($attributes as $key => $value) {
+                    if (! in_array($key, $columns)) {
+                        unset($attributes[$key]);
+                    }
+                }
+
+                $model->forceFill($attributes);
+                $model->save();
+
+                $this->info("created $class with key $event->key");
+
+                continue;
+            }
+
+            $model = $model->where($model->getKeyName(), $event->key)
+                ->orWhere('uuid', $event->key)
+                ->first();
+
+            if($event->event === 'eloquent.deleting') {
+                $model->delete();
+
+                $this->info("deleted $class with key $event->key");
+                continue;
+            }
+
+            $model->forceFill([$event->property => $event->value,]);
+            $model->save();
+
+            $this->info("updated $event->property to $event->value for $class with key $event->key");
+        }
+    }
+
+    protected function info($message)
+    {
+        event('ecow.info', ['payload' => ['message' => $message]]);
     }
 }

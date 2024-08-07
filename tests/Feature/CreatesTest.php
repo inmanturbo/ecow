@@ -180,3 +180,34 @@ it('can store a null value with an auto incremented key', function () {
         'value' => null,
     ]);
 });
+
+it('will replay back to existing state', function () {
+    $this->model->fill(['name' => 'Taylor Otwell', 'uuid' => str()->ulid()]);
+
+    $this->model->save();
+
+    $this->assertDatabaseHas('users', ['name' => 'Taylor Otwell']);
+
+    $this->model->delete();
+
+    $two = $this->model->create(['name' => 'Taylor Otwell 2']);
+
+    $three = $this->model->create(['name' => 'Taylor Otwell 3']);
+
+    $two->update(['name' => 'Taylor Otwell 2 updated']);
+
+    $three->delete();
+
+    $all = $this->model->all();
+
+    $this->model->truncate();
+
+    $this->assertFalse($all == $this->model->all());
+
+    $this->artisan('ecow:replay-models')
+        ->expectsConfirmation('Do you want to replay the models? This will delete all the models and replay events!', 'yes')
+        ->assertExitCode(0);
+
+    $this->assertNotSame($all, $this->model->all());
+    $this->assertTrue($all == $this->model->all());
+});

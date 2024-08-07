@@ -3,6 +3,7 @@
 namespace Inmanturbo\Ecow;
 
 use Inmanturbo\Ecow\Commands\EcowCommand;
+use Inmanturbo\Ecow\Commands\ReplayModelsCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -19,7 +20,8 @@ class EcowServiceProvider extends PackageServiceProvider
             ->name('ecow')
             ->hasConfigFile()
             ->hasMigration('2024_07_07_131035_create_saved_models_table')
-            ->hasCommand(EcowCommand::class);
+            ->hasCommand(EcowCommand::class)
+            ->hasCommand(ReplayModelsCommand::class);
     }
 
     public function packageRegistering()
