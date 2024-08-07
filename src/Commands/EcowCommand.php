@@ -28,6 +28,8 @@ class EcowCommand extends Command
 
     public function handle(): int
     {
+
+        dd('This is a debugging function.');
         $this->repository = app('migration.repository');
 
         if ($this->option('database')) {
