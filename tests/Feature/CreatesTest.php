@@ -22,6 +22,7 @@ beforeEach(function () {
     $this->autoIncrementedModel = new class extends \Illuminate\Database\Eloquent\Model
     {
         protected $guarded = [];
+
         protected $table = 'users_auto_incremented';
     };
 
