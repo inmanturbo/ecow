@@ -19,7 +19,7 @@ class StoreSavedModels
                 $savedModel = Ecow::modelClass()::create([
                     'event' => (string) str()->of($data->event)->before(':'),
                     'model_version' => Ecow::getNextModelVersion($data->model),
-                    'key' => $data->guid,
+                    'key' => $data->key,
                     'model' => $data->model->getMorphClass(),
                     'values' => $data->attributes,
                     'property' => $key,

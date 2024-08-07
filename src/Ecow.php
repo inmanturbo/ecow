@@ -47,14 +47,7 @@ class Ecow
     public function savedModels(mixed $model): \Illuminate\Database\Eloquent\Builder
     {
         return $this->modelClass()::where('model', $model->getMorphClass())
-            ->where( function ($query) use ($model) {
-                $query->where('key', $model->getKey())
-                    ->orWhere('key', $model->uuid)
-                    ->orWhere(function ($query) use ($model) {
-                        $query->where('property', 'guid')
-                            ->where('value', $model->guid);
-                    });
-            });
+            ->where('key', $model->uuid ?? $model->getKey());
     }
 
     public function savedModelVersions(mixed $model): mixed
@@ -69,7 +62,7 @@ class Ecow
 
     public function modelVersion($model): int
     {
-        return $this->snapshots($model)->latest('model_version')->first()->model_version ?? 0;
+        return $this->savedModelVersion($model);
     }
 
     public function snapshots(mixed $model): mixed
@@ -105,7 +98,18 @@ class Ecow
             'values' => json_encode($attributes, JSON_THROW_ON_ERROR),
             'saved_model_id' => $latestVersion->id,
         ]);
+    }
 
+    public function getModelGuid(mixed $model): string
+    {
+        if(! $model->getKey()) {
+            return $model->uuid ?? (string) str()->ulid();
+        }
+
+        return $model->uuid ?? $this->modelClass()::where('model', $model->getMorphClass())
+            ->where('key', $model->getKey())
+            ->where('property', 'guid')
+            ->first()->value ?? (string) str()->ulid();
     }
 
     public function retrieveModel(mixed $model): mixed
@@ -204,7 +208,8 @@ class Ecow
             'event' => $events,
             'model' => $model,
             'attributes' => $this->getAttributes($model),
-            'guid' => $model->uuid ?? ($model->getKey() ?? (string) str()->ulid()),
+            'guid' => $this->getModelGuid($model),
+            'key' => $model->uuid ?? ($model->getKey() ?? null),
         ];
 
         $pipeline = Pipeline::send($data)

@@ -63,6 +63,7 @@ it('can store pending model changes', function () {
         'event' => 'eloquent.updating:user',
         'guid' => $this->model->uuid,
         'attributes' => $this->model->getAttributes(),
+        'key' => $this->model->uuid,
     ];
 
     $next = function ($data) {
