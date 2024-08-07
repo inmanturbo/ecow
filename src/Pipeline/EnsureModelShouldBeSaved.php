@@ -11,11 +11,11 @@ class EnsureModelShouldBeSaved
      */
     public function __invoke(mixed $data, Closure $next)
     {
-        if(isset($data->model->shouldKeep) && $data->model->shouldKeep === true) {
+        if (isset($data->model->shouldKeep) && $data->model->shouldKeep === true) {
             return $next($data);
         }
 
-        if(isset($data->model->shouldKeep) && $data->model->shouldKeep === false) {
+        if (isset($data->model->shouldKeep) && $data->model->shouldKeep === false) {
             return;
         }
 
