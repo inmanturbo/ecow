@@ -9,16 +9,16 @@ use Illuminate\Support\Facades\Pipeline;
 use Inmanturbo\Ecow\Pipeline\BackfillAutoIncrementedKey;
 use Inmanturbo\Ecow\Pipeline\CreateModel;
 use Inmanturbo\Ecow\Pipeline\CreateSavedModel;
-use Inmanturbo\Ecow\Pipeline\DeleteModel;
 use Inmanturbo\Ecow\Pipeline\EnsureEventsAreNotReplaying;
 use Inmanturbo\Ecow\Pipeline\EnsureModelDoesNotAlreadyExist;
 use Inmanturbo\Ecow\Pipeline\EnsureModelIsNotBeingSaved;
 use Inmanturbo\Ecow\Pipeline\EnsureModelIsNotSavedModel;
 use Inmanturbo\Ecow\Pipeline\EnsureModelShouldBeSaved;
+use Inmanturbo\Ecow\Pipeline\FillModel;
 use Inmanturbo\Ecow\Pipeline\FilterAttributes;
+use Inmanturbo\Ecow\Pipeline\Halt;
 use Inmanturbo\Ecow\Pipeline\StoreDeletedModel;
 use Inmanturbo\Ecow\Pipeline\StoreSavedModels;
-use Inmanturbo\Ecow\Pipeline\UpdateModel;
 
 class Ecow
 {
@@ -166,6 +166,7 @@ class Ecow
             FilterAttributes::class,
             CreateModel::class,
             BackfillAutoIncrementedKey::class,
+            Halt::class,
         ]);
     }
 
@@ -178,7 +179,7 @@ class Ecow
             EnsureModelIsNotBeingSaved::class,
             StoreSavedModels::class,
             FilterAttributes::class,
-            UpdateModel::class,
+            FillModel::class,
         ]);
     }
 
@@ -190,7 +191,6 @@ class Ecow
             EnsureEventsAreNotReplaying::class,
             EnsureModelIsNotBeingSaved::class,
             StoreDeletedModel::class,
-            DeleteModel::class,
         ]);
     }
 
@@ -213,13 +213,12 @@ class Ecow
             'attributes' => $this->getAttributes($model),
             'guid' => $this->getModelGuid($model),
             'key' => $model->uuid ?? ($model->getKey() ?? null),
+            'halt' => false,
         ];
 
-        $pipeline = Pipeline::send($data)
+        return Pipeline::send($data)
             ->through(app("ecow.{$event}")->toArray())
-            ->then(fn ($data) => false);
-
-        return $pipeline;
+            ->then(fn ($data) => ! $data->halt);
     }
 
     public function markReplaying(): void

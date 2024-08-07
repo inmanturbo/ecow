@@ -16,6 +16,7 @@ class CreateModel
 
         $data->model->forceFill($data->attributes);
         $data->model->save();
+        $data->halt = true;
 
         Ecow::removeModelBeingSaved($data->model);
 

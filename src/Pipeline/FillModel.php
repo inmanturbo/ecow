@@ -3,22 +3,15 @@
 namespace Inmanturbo\Ecow\Pipeline;
 
 use Closure;
-use Inmanturbo\Ecow\Facades\Ecow;
 
-class DeleteModel
+class FillModel
 {
     /**
      * Invoke the class instance.
      */
     public function __invoke(mixed $data, Closure $next)
     {
-        $model = $data->model;
-
-        Ecow::addModelBeingSaved($model);
-
-        $model->delete();
-
-        Ecow::removeModelBeingSaved($model);
+        $data->model->forceFill($data->attributes);
 
         return $next($data);
     }

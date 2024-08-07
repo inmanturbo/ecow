@@ -67,7 +67,7 @@ it('can store pending model changes', function () {
     ];
 
     $next = function ($data) {
-        return $data;
+        return $data->model->save();
     };
 
     $storesUpdatedModels($data, $next);
@@ -82,9 +82,9 @@ it('can store pending model changes', function () {
         'value' => 'Jane Doe',
     ]);
 
-    $updatesModel = new \Inmanturbo\Ecow\Pipeline\UpdateModel;
+    $fillsModel = new \Inmanturbo\Ecow\Pipeline\FillModel;
 
-    $updatesModel($data, $next);
+    $fillsModel($data, $next);
 
     $this->assertEquals('Jane Doe', $this->model->fresh()->name);
 });
