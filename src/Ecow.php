@@ -14,6 +14,7 @@ use Inmanturbo\Ecow\Pipeline\EnsureEventsAreNotReplaying;
 use Inmanturbo\Ecow\Pipeline\EnsureModelDoesNotAlreadyExist;
 use Inmanturbo\Ecow\Pipeline\EnsureModelIsNotBeingSaved;
 use Inmanturbo\Ecow\Pipeline\EnsureModelIsNotSavedModel;
+use Inmanturbo\Ecow\Pipeline\EnsureModelShouldBeSaved;
 use Inmanturbo\Ecow\Pipeline\FilterAttributes;
 use Inmanturbo\Ecow\Pipeline\StoreDeletedModel;
 use Inmanturbo\Ecow\Pipeline\StoreSavedModels;
@@ -156,6 +157,7 @@ class Ecow
     public function listenForCreatingEvents(): void
     {
         $this->listen('eloquent.creating*', [
+            EnsureModelShouldBeSaved::class,
             EnsureModelIsNotSavedModel::class,
             EnsureEventsAreNotReplaying::class,
             EnsureModelIsNotBeingSaved::class,
@@ -170,6 +172,7 @@ class Ecow
     public function listenForUpdatingEvents(): void
     {
         $this->listen('eloquent.updating*', [
+            EnsureModelShouldBeSaved::class,
             EnsureModelIsNotSavedModel::class,
             EnsureEventsAreNotReplaying::class,
             EnsureModelIsNotBeingSaved::class,
@@ -182,6 +185,7 @@ class Ecow
     public function listenForDeletingEvents(): void
     {
         $this->listen('eloquent.deleting*', [
+            EnsureModelShouldBeSaved::class,
             EnsureModelIsNotSavedModel::class,
             EnsureEventsAreNotReplaying::class,
             EnsureModelIsNotBeingSaved::class,

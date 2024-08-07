@@ -15,9 +15,17 @@ return [
 
     /*
      * The table name used to store saved models.
+     * 
+     * Changing it is not supported at this time, 
+     * but it's here for reference and used by the `ecow:migrate` command.
      */
     'saved_models_table' => 'saved_models',
 
+    /*
+     * These tables will be created when running the migration.
+     * 
+     * They will be dropped when running `php artisan ecow:migrate --fresh`.
+     */
     'migration_tables' => [
         'saved_models',
         'saved_model_snapshots',
