@@ -167,7 +167,7 @@ php artisan ecow:replay-models
 
 This will truncate all recorded models and replay through all of their built up state using current application logic.
 
-### Excluding models from Ecow listeners.
+### Excluding models from Ecow listeners
 
 Some models you may not want to be recorded. You can add their class names to the `unsaved_models` array in the `ecow.php` config file.
 
