@@ -14,6 +14,7 @@ class StoreSavedModels
     public function __invoke($data, Closure $next)
     {
         DB::transaction(function () use (&$data) {
+            $model = $data->model;
 
             foreach ($data->model->getDirty() as $key => $value) {
                 $savedModel = Ecow::modelClass()::create([

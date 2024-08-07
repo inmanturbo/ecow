@@ -75,7 +75,7 @@ it('can store pending model changes', function () {
     $this->assertDatabaseHas('saved_models', [
         'event' => 'eloquent.updating',
         'model_version' => 2,
-        'key' => $this->model->uuid,
+        'key' => (string) $this->model->uuid,
         'model' => $this->model->getMorphClass(),
         'values' => json_encode($this->model->getAttributes()),
         'property' => 'name',

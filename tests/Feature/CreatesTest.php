@@ -8,8 +8,22 @@ beforeEach(function () {
         $table->increments('id');
         $table->uuid('uuid')->unique();
         $table->string('name');
+        $table->string('nickname')->nullable();
         $table->timestamps();
     });
+
+    Schema::create('users_auto_incremented', function ($table) {
+        $table->increments('id');
+        $table->string('name');
+        $table->string('nickname')->nullable();
+        $table->timestamps();
+    });
+
+    $this->autoIncrementedModel = new class extends \Illuminate\Database\Eloquent\Model
+    {
+        protected $guarded = [];
+        protected $table = 'users_auto_incremented';
+    };
 
     $this->model = new class extends \Illuminate\Database\Eloquent\Model
     {
@@ -55,6 +69,22 @@ it('it will store a copy before a model is created', function () {
     ]);
 });
 
+it('it will store a copy before a model is created with an auto incremented key', function () {
+    $this->autoIncrementedModel->fill(['name' => 'Taylor Otwell']);
+
+    $attributes = $this->autoIncrementedModel->toArray();
+
+    $this->autoIncrementedModel->save();
+
+    $this->assertDatabaseHas('users_auto_incremented', ['name' => 'Taylor Otwell']);
+    $this->assertDatabaseHas('saved_models', [
+        'model' => get_class($this->autoIncrementedModel),
+        'key' => $this->autoIncrementedModel->getKey(),
+        'model_version' => 1,
+        'values' => json_encode($attributes),
+    ]);
+});
+
 it('it will store a copy before a model is updated', function () {
     $this->model->fill(['name' => 'Taylor Otwell', 'uuid' => str()->ulid()]);
 
@@ -71,6 +101,22 @@ it('it will store a copy before a model is updated', function () {
     ]);
 });
 
+it('it will store a copy before a model is updated with an auto incremented key', function () {
+    $this->autoIncrementedModel->fill(['name' => 'Taylor Otwell']);
+
+    $this->autoIncrementedModel->save();
+
+    $this->autoIncrementedModel->update(['name' => 'Taylor Otwell 2']);
+
+    $this->assertDatabaseHas('users_auto_incremented', ['name' => 'Taylor Otwell 2']);
+    $this->assertDatabaseHas('saved_models', [
+        'model' => get_class($this->autoIncrementedModel),
+        'key' => $this->autoIncrementedModel->getKey(),
+        'model_version' => 2,
+        'values' => json_encode($this->autoIncrementedModel->toArray()),
+    ]);
+});
+
 it('it will store a copy before a model is deleted', function () {
     $this->model->fill(['name' => 'Taylor Otwell', 'uuid' => str()->ulid()]);
 
@@ -84,5 +130,53 @@ it('it will store a copy before a model is deleted', function () {
         'key' => $this->model->uuid,
         'model_version' => 2,
         'values' => json_encode($this->model->toArray()),
+    ]);
+});
+
+it('it will store a copy before a model is deleted with an auto incremented key', function () {
+    $this->autoIncrementedModel->fill(['name' => 'Taylor Otwell']);
+
+    $this->autoIncrementedModel->save();
+
+    $this->autoIncrementedModel->delete();
+
+    $this->assertDatabaseMissing('users_auto_incremented', ['name' => 'Taylor Otwell']);
+    $this->assertDatabaseHas('saved_models', [
+        'model' => get_class($this->autoIncrementedModel),
+        'key' => $this->autoIncrementedModel->getKey(),
+        'model_version' => 2,
+        'values' => json_encode($this->autoIncrementedModel->toArray()),
+    ]);
+});
+
+it('can store a null value', function () {
+    $this->model->fill(['name' => 'Taylor Otwell', 'nickname' => 'test', 'uuid' => str()->ulid()]);
+
+    $this->model->save();
+
+    $this->model->update(['name' => 'Taylor Otwell 2', 'nickname' => null]);
+
+    $this->assertDatabaseHas('users', ['name' => 'Taylor Otwell 2']);
+    $this->assertDatabaseHas('saved_models', [
+        'model' => get_class($this->model),
+        'key' => $this->model->uuid,
+        'property' => 'nickname',
+        'value' => null,
+    ]);
+});
+
+it('can store a null value with an auto incremented key', function () {
+    $this->autoIncrementedModel->fill(['name' => 'Taylor Otwell', 'nickname' => 'test']);
+
+    $this->autoIncrementedModel->save();
+
+    $this->autoIncrementedModel->update(['name' => 'Taylor Otwell 2', 'nickname' => null]);
+
+    $this->assertDatabaseHas('users_auto_incremented', ['name' => 'Taylor Otwell 2']);
+    $this->assertDatabaseHas('saved_models', [
+        'model' => get_class($this->autoIncrementedModel),
+        'key' => $this->autoIncrementedModel->getKey(),
+        'property' => 'nickname',
+        'value' => null,
     ]);
 });

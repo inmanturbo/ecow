@@ -13,6 +13,7 @@ use Inmanturbo\Ecow\Pipeline\EnsureModelDoesNotAlreadyExist;
 use Inmanturbo\Ecow\Pipeline\EnsureModelIsNotBeingSaved;
 use Inmanturbo\Ecow\Pipeline\EnsureModelIsNotSavedModel;
 use Inmanturbo\Ecow\Pipeline\EnsureModelShouldBeSaved;
+use Inmanturbo\Ecow\Pipeline\EnsureSavedModelNeedsBackfill;
 use Inmanturbo\Ecow\Pipeline\FillModel;
 use Inmanturbo\Ecow\Pipeline\FilterAttributes;
 use Inmanturbo\Ecow\Pipeline\Halt;
@@ -108,19 +109,20 @@ class Ecow
         return $model->uuid ?? $this->modelClass()::where('model', $model->getMorphClass())
             ->where('key', $model->getKey())
             ->where('property', 'guid')
+            ->orderBy('model_version')
             ->first()->value ?? (string) str()->ulid();
     }
 
     public function retrieveModel(mixed $model): mixed
     {
-        $attributes = $this->snapshots($model)
+        $attributes = ($snapshot = $this->snapshots($model)
             ->where('model_version', $this->modelVersion($model))
-            ->first()->values ?? json_encode([]);
+            ->first())?->values ?? json_encode([]);
 
         $model->forceFill(json_decode($attributes, true));
 
         $properties = $this->savedModelVersions($model)
-            ->where('model_version', '>', $this->modelVersion($model))
+            ->where('model_version', '>', $snapshot?->model_version ?? 0)
             ->get(['property', 'value']);
 
         foreach ($properties as $version) {
@@ -163,6 +165,8 @@ class Ecow
             EnsureModelDoesNotAlreadyExist::class,
             CreateSavedModel::class,
             FilterAttributes::class,
+            FillModel::class,
+            EnsureSavedModelNeedsBackfill::class,
             CreateModel::class,
             BackfillAutoIncrementedKey::class,
             Halt::class,

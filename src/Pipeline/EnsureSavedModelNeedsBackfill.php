@@ -5,19 +5,16 @@ namespace Inmanturbo\Ecow\Pipeline;
 use Closure;
 use Inmanturbo\Ecow\Facades\Ecow;
 
-class CreateModel
+class EnsureSavedModelNeedsBackfill
 {
     /**
      * Invoke the class instance.
      */
     public function __invoke(mixed $data, Closure $next)
     {
-        Ecow::addModelBeingSaved($data->model);
-        
-        $data->model->save();
-        $data->halt = true;
-
-        Ecow::removeModelBeingSaved($data->model);
+        if (Ecow::savedModelVersion($data->model) > 0) {
+            return;
+        }
 
         return $next($data);
     }

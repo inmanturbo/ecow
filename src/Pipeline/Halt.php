@@ -11,8 +11,6 @@ class Halt
      */
     public function __invoke(mixed $data, Closure $next)
     {
-        $data->halt = true;
-
-        return false;
+        return $data->halt ? false : $next($data);
     }
 }

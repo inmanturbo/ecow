@@ -11,13 +11,22 @@ class FilterAttributes
      */
     public function __invoke(mixed $data, Closure $next)
     {
-        $model = $data->model;
+        $columns = $data->model->getConnection()->getSchemaBuilder()->getColumnListing($data->model->getTable());
 
-        $columns = $model->getConnection()->getSchemaBuilder()->getColumnListing($model->getTable());
+        collect($data->model->getFillable())->each(function ($fillable) use (&$columns) {
+            if (! in_array($fillable, $columns)) {
+                $columns[] = $fillable;
+            }
+        });
 
-        $data->attributes = array_filter((array) $data->attributes, function ($key) use ($columns) {
-            return in_array($key, $columns);
-        }, ARRAY_FILTER_USE_KEY);
+        collect($data->attributes)->each(function ($value, $key) use (&$columns, $data) {
+            if (! in_array($key, $columns)) {
+                unset($data->attributes[$key]);
+                if (isset($data->model->$key)) {
+                    unset($data->model->$key);
+                }
+            }
+        });
 
         return $next($data);
     }
