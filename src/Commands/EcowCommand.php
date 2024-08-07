@@ -29,7 +29,7 @@ class EcowCommand extends Command
     public function handle(): int
     {
 
-        dd(config('database.connections'));
+        dd(config('database.connections'), config('database.default'));
         $this->repository = app('migration.repository');
 
         if ($this->option('database')) {
