@@ -2,7 +2,6 @@
 
 namespace Inmanturbo\Ecow;
 
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Pipeline;
@@ -196,7 +195,7 @@ class Ecow
 
     public function listen(string $event, array $pipes): void
     {
-        app()->bind("ecow.{$event}", fn () => Collection::make($pipes));
+        app()->bind("ecow.{$event}", fn () => collect($pipes));
 
         Event::listen($event, function (string $events, array $payload) use ($event) {
             return $this->eventPipeline($event, $payload, $events);
