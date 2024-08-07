@@ -12,6 +12,11 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Inmanturbo\Ecow\Exceptions\CouldNotRestoreModel;
 
+/**
+ * @property array $values
+ * @property string $model
+ * @property Carbon $created_at
+ */
 class SavedModel extends Model
 {
     use MassPrunable;

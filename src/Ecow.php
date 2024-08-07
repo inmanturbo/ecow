@@ -44,7 +44,7 @@ class Ecow
         return new $modelClass;
     }
 
-    public function savedModels(mixed $model): \Illuminate\Database\Eloquent\Builder
+    public function savedModels(mixed $model): mixed
     {
         return $this->modelClass()::where('model', $model->getMorphClass())
             ->where('key', $model->uuid ?? $model->getKey());
@@ -74,7 +74,7 @@ class Ecow
 
     public function getNextModelVersion(mixed $model): int
     {
-        return $this->savedModelVersion($model) + 1 ?? 1;
+        return $this->savedModelVersion($model) + 1;
     }
 
     public function snapshotModel(mixed $model): void
