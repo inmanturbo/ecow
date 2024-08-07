@@ -23,14 +23,11 @@ class SavedModel extends Model
 
     public $casts = [
         'values' => 'array',
-        'created_at' => 'datetime',
     ];
 
     public $guarded = [];
 
     public $table = 'saved_models';
-
-    public $timestamps = false;
 
     public function restore(?Closure $beforeSaving = null): Model
     {
