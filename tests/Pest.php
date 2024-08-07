@@ -7,6 +7,8 @@ uses(TestCase::class)->in(__DIR__);
 
 uses()
     ->beforeEach(function () {
+
+        dd('before each');
         Artisan::call('ecow:migrate');
     })
     ->in('Feature');
