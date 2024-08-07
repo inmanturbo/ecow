@@ -222,9 +222,9 @@ app()->bind("ecow.{$event}", fn () => collect($pipes));
 
 Where the `{$event}` is a [wildcard event](https://laravel.com/docs/11.x/events#wildcard-event-listeners) for eloquent:
 
-- ecow.eloquent.creating* => eloquent.creating*
-- ecow.eloquent.updating* => eloquent.updating*
-- ecow.eloquent.deleting* => eloquent.deleting*
+- `ecow.eloquent.creating*` => `eloquent.creating*`
+- `ecow.eloquent.updating*` => `eloquent.updating*`
+- `ecow.eloquent.deleting*` => `eloquent.deleting*`
 
 #### Example
 
