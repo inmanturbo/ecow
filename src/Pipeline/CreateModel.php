@@ -13,7 +13,7 @@ class CreateModel
     public function __invoke(mixed $data, Closure $next)
     {
         Ecow::addModelBeingSaved($data->model);
-        
+
         $data->model->save();
         $data->halt = true;
 

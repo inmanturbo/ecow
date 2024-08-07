@@ -15,7 +15,6 @@ class ReplayModelsCommand extends Command
 
     public $description = 'Replay the models';
 
-
     public function handle(): int
     {
         if (! $this->option('force') && ! $this->confirm('Do you want to replay the models? This will delete all the models and replay events!')) {

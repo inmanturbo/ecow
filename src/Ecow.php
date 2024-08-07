@@ -161,7 +161,7 @@ class Ecow
             return;
         }
 
-        if (false === config('ecow.enabled', true)) {
+        if (config('ecow.enabled', true) === false) {
             return;
         }
 
@@ -324,12 +324,10 @@ class Ecow
         $modelClasses = $this->modelClass()::distinct('model')
             ->get(['model']);
 
-
         foreach ($modelClasses as $modelClass) {
             $model = $modelClass->model;
-            
-            $this-> info("truncating $model");
 
+            $this->info("truncating $model");
 
             $model::truncate();
         }
@@ -342,7 +340,7 @@ class Ecow
 
             $class = get_class($model);
 
-            if($event->model_version === 1) {
+            if ($event->model_version === 1) {
                 $columns = $model->getConnection()->getSchemaBuilder()->getColumnListing($model->getTable());
 
                 $attributes = $event->values;
@@ -365,14 +363,15 @@ class Ecow
                 ->orWhere('uuid', $event->key)
                 ->first();
 
-            if($event->event === 'eloquent.deleting') {
+            if ($event->event === 'eloquent.deleting') {
                 $model->delete();
 
                 $this->info("deleted $class with key $event->key");
+
                 continue;
             }
 
-            $model->forceFill([$event->property => $event->value,]);
+            $model->forceFill([$event->property => $event->value]);
             $model->save();
 
             $this->info("updated $event->property to $event->value for $class with key $event->key");
