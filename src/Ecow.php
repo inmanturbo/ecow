@@ -2,7 +2,6 @@
 
 namespace Inmanturbo\Ecow;
 
-use DeepCopy\Filter\Filter;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
@@ -102,7 +101,7 @@ class Ecow
 
     public function getModelGuid(mixed $model): string
     {
-        if(! $model->getKey()) {
+        if (! $model->getKey()) {
             return $model->uuid ?? (string) str()->ulid();
         }
 
@@ -117,7 +116,7 @@ class Ecow
         $attributes = $this->snapshots($model)
             ->where('model_version', $this->modelVersion($model))
             ->first()->values ?? json_encode([]);
-        
+
         $model->forceFill(json_decode($attributes, true));
 
         $properties = $this->savedModelVersions($model)
@@ -195,7 +194,7 @@ class Ecow
     {
         app()->bind("ecow.{$event}", fn () => Collection::make($pipes));
 
-        Event::listen($event, function(string $events, array $payload) use ($event) {
+        Event::listen($event, function (string $events, array $payload) use ($event) {
             return $this->eventPipeline($event, $payload, $events);
         });
     }
@@ -218,7 +217,6 @@ class Ecow
 
         return $pipeline;
     }
-
 
     public function markReplaying(): void
     {

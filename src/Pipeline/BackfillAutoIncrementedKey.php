@@ -3,7 +3,6 @@
 namespace Inmanturbo\Ecow\Pipeline;
 
 use Closure;
-use Inmanturbo\Ecow\Facades\Ecow;
 
 class BackfillAutoIncrementedKey
 {
@@ -12,8 +11,8 @@ class BackfillAutoIncrementedKey
      */
     public function __invoke(mixed $data, Closure $next)
     {
-        if(isset($data->model->uuid) && $data->model->uuid) {
-           return $next($data);
+        if (isset($data->model->uuid) && $data->model->uuid) {
+            return $next($data);
         }
 
         if ($data->model->getKeyType() === 'string') {
@@ -22,7 +21,7 @@ class BackfillAutoIncrementedKey
 
         $data->savedModel->forceFill(['key' => $data->model->getKey()]);
         $data->savedModel->save();
-        
+
         return $next($data);
     }
 }

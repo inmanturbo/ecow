@@ -3,7 +3,6 @@
 namespace Inmanturbo\Ecow\Pipeline;
 
 use Closure;
-use Inmanturbo\Ecow\Facades\Ecow;
 
 class FilterAttributes
 {
