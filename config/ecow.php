@@ -1,6 +1,12 @@
 <?php
 
 return [
+
+    /*
+     * Enable or disable the event listeners.
+     */
+    'enabled' => env('ECOW_ENABLED', true),
+
     /*
      * The model used to store saved models.
      */

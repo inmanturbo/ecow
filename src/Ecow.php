@@ -29,6 +29,8 @@ class Ecow
 
     public array $modelsBeingSaved = [];
 
+    public bool $disabled = false;
+
     public function modelClass(): string
     {
         $modelClass = config('ecow.model');
@@ -155,6 +157,14 @@ class Ecow
 
     public function bootListeners(): void
     {
+        if ($this->isDisabled()) {
+            return;
+        }
+
+        if (false === config('ecow.enabled', true)) {
+            return;
+        }
+
         $this->listenForCreatingEvents();
         $this->listenForUpdatingEvents();
         $this->listenForDeletingEvents();
@@ -211,8 +221,12 @@ class Ecow
         });
     }
 
-    protected function eventPipeline(string $event, array $payload, $events): mixed
+    protected function eventPipeline(string $event, array $payload, $events)
     {
+        if ($this->isDisabled()) {
+            return;
+        }
+
         $model = $payload[0];
 
         $data = (object) [
@@ -368,5 +382,25 @@ class Ecow
     protected function info($message)
     {
         event('ecow.info', ['payload' => ['message' => $message]]);
+    }
+
+    public function disable(): void
+    {
+        $this->disabled = true;
+    }
+
+    public function enable(): void
+    {
+        $this->disabled = false;
+    }
+
+    public function isDisabled(): bool
+    {
+        return $this->disabled;
+    }
+
+    public function isNotDisabled(): bool
+    {
+        return ! $this->isDisabled();
     }
 }
