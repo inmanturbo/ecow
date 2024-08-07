@@ -13,33 +13,20 @@ class StoreSavedModels
      */
     public function __invoke($data, Closure $next)
     {
-        $model = $data->model;
+        DB::transaction(function () use (&$data) {
 
-        $hiddenAttributes = $model->getHidden();
-
-        /*
-         * Avoid changing original instance
-         */
-        $cloned = clone $model;
-
-        $cloned->makeVisible($hiddenAttributes);
-
-        $attributes = $cloned->attributesToArray();
-
-        DB::transaction(function () use ($model, $attributes, $data) {
-
-            Ecow::snapshotModel($model);
-
-            foreach ($model->getDirty() as $key => $value) {
+            foreach ($data->model->getDirty() as $key => $value) {
                 $savedModel = Ecow::modelClass()::create([
                     'event' => (string) str()->of($data->event)->before(':'),
-                    'model_version' => Ecow::getNextModelVersion($model),
-                    'key' => $model->uuid ?? $model->getKey(),
-                    'model' => $model->getMorphClass(),
-                    'values' => $attributes,
+                    'model_version' => Ecow::getNextModelVersion($data->model),
+                    'key' => $data->guid,
+                    'model' => $data->model->getMorphClass(),
+                    'values' => $data->attributes,
                     'property' => $key,
                     'value' => $value,
                 ]);
+
+                $data->attributes[$savedModel->property] = $savedModel->value;
             }
         });
 

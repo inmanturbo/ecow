@@ -12,28 +12,12 @@ class CreateModel
      */
     public function __invoke(mixed $data, Closure $next)
     {
-        $model = $data->model;
+        Ecow::addModelBeingSaved($data->model);
 
-        Ecow::addModelBeingSaved($model);
+        $data->model->forceFill($data->attributes);
+        $data->model->save();
 
-        $columns = $model->getConnection()->getSchemaBuilder()->getColumnListing($model->getTable());
-
-        $savedModel = Ecow::savedModelVersions($model)->first();
-
-        $attributes = $savedModel->values;
-
-        foreach ($attributes as $key => $value) {
-            if (! in_array($key, $columns)) {
-                unset($attributes[$key]);
-            }
-        }
-
-        $model->forceFill($attributes);
-        $model->save();
-
-        Ecow::snapshotModel($model);
-
-        Ecow::removeModelBeingSaved($model);
+        Ecow::removeModelBeingSaved($data->model);
 
         return $next($data);
     }

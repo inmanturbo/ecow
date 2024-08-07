@@ -61,6 +61,8 @@ it('can store pending model changes', function () {
     $data = (object) [
         'model' => $this->model,
         'event' => 'eloquent.updating:user',
+        'guid' => $this->model->uuid,
+        'attributes' => $this->model->getAttributes(),
     ];
 
     $next = function ($data) {
@@ -74,7 +76,7 @@ it('can store pending model changes', function () {
         'model_version' => 2,
         'key' => $this->model->uuid,
         'model' => $this->model->getMorphClass(),
-        'values' => json_encode($this->model->toArray()),
+        'values' => json_encode($this->model->getAttributes()),
         'property' => 'name',
         'value' => 'Jane Doe',
     ]);

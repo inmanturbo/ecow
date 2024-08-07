@@ -16,11 +16,8 @@ class UpdateModel
 
         Ecow::addModelBeingSaved($model);
 
-        $model = Ecow::retrieveModel($model);
-
+        $model->forceFill($data->attributes);
         $model->save();
-
-        Ecow::snapshotModel($model);
 
         Ecow::removeModelBeingSaved($model);
 
