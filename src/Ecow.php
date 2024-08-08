@@ -3,8 +3,6 @@
 namespace Inmanturbo\Ecow;
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Pipeline;
 use Illuminate\Support\Facades\Schema;
 use Inmanturbo\Ecow\Events\FinishedReplayingModels;
 use Inmanturbo\Ecow\Events\StartedReplayingModels;
@@ -20,8 +18,10 @@ use Inmanturbo\Ecow\Pipeline\EnsureSavedModelNeedsBackfill;
 use Inmanturbo\Ecow\Pipeline\FillModel;
 use Inmanturbo\Ecow\Pipeline\FilterAttributes;
 use Inmanturbo\Ecow\Pipeline\Halt;
+use Inmanturbo\Ecow\Pipeline\InitializeData;
 use Inmanturbo\Ecow\Pipeline\StoreDeletedModel;
 use Inmanturbo\Ecow\Pipeline\StoreSavedModels;
+use Inmanturbo\Modelware\Facades\Modelware;
 
 class Ecow
 {
@@ -173,6 +173,7 @@ class Ecow
     public function listenForCreatingEvents(): void
     {
         $this->listen('eloquent.creating*', [
+            InitializeData::class,
             EnsureModelShouldBeSaved::class,
             EnsureModelIsNotSavedModel::class,
             EnsureEventsAreNotReplaying::class,
@@ -191,6 +192,7 @@ class Ecow
     public function listenForUpdatingEvents(): void
     {
         $this->listen('eloquent.updating*', [
+            InitializeData::class,
             EnsureModelShouldBeSaved::class,
             EnsureModelIsNotSavedModel::class,
             EnsureEventsAreNotReplaying::class,
@@ -204,6 +206,7 @@ class Ecow
     public function listenForDeletingEvents(): void
     {
         $this->listen('eloquent.deleting*', [
+            InitializeData::class,
             EnsureModelShouldBeSaved::class,
             EnsureModelIsNotSavedModel::class,
             EnsureEventsAreNotReplaying::class,
@@ -214,33 +217,7 @@ class Ecow
 
     public function listen(string $event, array $pipes): void
     {
-        app()->bind("ecow.{$event}", fn () => collect($pipes));
-
-        Event::listen($event, function (string $events, array $payload) use ($event) {
-            return $this->eventPipeline($event, $payload, $events);
-        });
-    }
-
-    protected function eventPipeline(string $event, array $payload, $events)
-    {
-        if ($this->isDisabled()) {
-            return;
-        }
-
-        $model = $payload[0];
-
-        $data = (object) [
-            'event' => $events,
-            'model' => $model,
-            'attributes' => $this->getAttributes($model),
-            'guid' => $this->getModelGuid($model),
-            'key' => $model->uuid ?? ($model->getKey() ?? null),
-            'halt' => false,
-        ];
-
-        return Pipeline::send($data)
-            ->through(app("ecow.{$event}")->toArray())
-            ->then(fn ($data) => ! $data->halt);
+        Modelware::add($event, $pipes, prefix: 'ecow');
     }
 
     public function markReplaying(): void

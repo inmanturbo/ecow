@@ -217,7 +217,9 @@ return [
 This package sends the event data through [pilelines](https://laravel.com/docs/11.x/helpers#pipeline) (similiar to middleware), which iterate thorugh collections of invokable classes, these collections are bound into and resolved from the service container. They can be replaced or overridden in the boot method of a service provider using the following syntax:
 
 ```php
-app()->bind("ecow.{$event}", fn () => collect($pipes));
+app()->bind("ecow.{$event}", function () use ($pipes) {
+    return collect($pipes)->map(fn ($pipe) => app($pipe));
+});
 ```
 
 Where the `{$event}` is a [wildcard event](https://laravel.com/docs/11.x/events#wildcard-event-listeners) for eloquent:
@@ -240,14 +242,36 @@ public function boot() {
 This package will send the following data object through your custom pipeline:
 
 ```php
-$data = (object) [
+use Inmanturbo\Modelware\Data;
+
+$data = app(Data::class, [
     'event' => $events,
-    'model' => $model,
-    'attributes' => $this->getAttributes($model),
-    'guid' => $this->getModelGuid($model),
-    'key' => $model->uuid ?? ($model->getKey() ?? null),
-    'halt' => false,
+    'model' => $payload[0],
+    'payload' => $payload,
+]);
+```
+
+It's recommended you use start your pipeline with the following defaults:
+
+```php
+[
+    \Inmanturbo\Ecow\Pipeline\InitializeData::class,
+    \Inmanturbo\Ecow\Pipeline\EnsureModelShouldBeSaved::class,
+    \Inmanturbo\Ecow\Pipeline\EnsureModelIsNotSavedModel::class,
+    \Inmanturbo\Ecow\Pipeline\EnsureEventsAreNotReplaying::class,
+    \Inmanturbo\Ecow\Pipeline\EnsureModelIsNotBeingSaved::class,
+
+    // custom classes here
+
 ];
+```
+
+You can also override individual pipes:
+
+```php
+
+app()->bind(\Inmanturbo\Ecow\Pipeline\InitializeData::class, \App\Pipeline\InitializeData::class)
+
 ```
 
 ### Disabling the Ecow Event listeners
