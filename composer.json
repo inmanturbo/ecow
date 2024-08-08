@@ -1,6 +1,6 @@
 {
     "name": "inmanturbo/ecow",
-    "description": "Eloquent copy-on-write: automatically copy all model changes to a seperate table.",
+    "description": "Eloquent copy-on-write: automatically copy all model changes to a separate table.",
     "keywords": [
         "inmanturbo",
         "laravel",
