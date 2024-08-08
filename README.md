@@ -124,7 +124,7 @@ $clone->fakeField;
 // 'this is some fake data'
 ```
 
-It's recommended in most cases you use a clone when retreiving models, rather than modifying the original model, as adding a bunch of arbitrary properties from the history to say, `auth()->user()` at runtime could have unexpected results.
+It's recommended in most cases you use a clone when retrieving models, rather than modifying the original model, as adding a bunch of arbitrary properties from the history to say, `auth()->user()` at runtime could have unexpected results.
 
 ### Snapshotting Models
 
