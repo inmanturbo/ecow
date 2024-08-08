@@ -5,7 +5,7 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/inmanturbo/ecow/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/inmanturbo/ecow/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/inmanturbo/ecow.svg?style=flat-square)](https://packagist.org/packages/inmanturbo/ecow)
 
-## Eloquent copy-on-write: automatically copy all model changes to a seperate table.
+## Eloquent copy-on-write: automatically copy all model changes to a separate table.
 
 <img src="art/ecow.svg" width="200px" alt="ecow" />
 
@@ -124,7 +124,7 @@ $clone->fakeField;
 // 'this is some fake data'
 ```
 
-It's recommended in most cases you use a clone when retreiving models, rather than modifying the original model, as adding a bunch of arbitrary properties from the history to say, auth()->user() at run time could have unexpected results.
+It's recommended in most cases you use a clone when retrieving models, rather than modifying the original model, as adding a bunch of arbitrary properties from the history to say, `auth()->user()` at runtime could have unexpected results.
 
 ### Snapshotting Models
 
@@ -167,7 +167,7 @@ php artisan ecow:replay-models
 
 This will truncate all recorded models and replay through all of their built up state using current application logic.
 
-### Excluding models from Ecow listeners.
+### Excluding models from Ecow listeners
 
 Some models you may not want to be recorded. You can add their class names to the `unsaved_models` array in the `ecow.php` config file.
 
@@ -213,11 +213,13 @@ return [
 ];
 ```
 
-### Overriding the `modelware` pipelines
-This package sends the event data through [pilelines](https://laravel.com/docs/11.x/helpers#pipeline) (similiar to middleware), which iterate thorugh collections of invokable classes, these collections are bound into and resolved from the service container. They can be replaced or overridden in the boot method of a service provider using the following syntax:
+### Overriding the [`modelware`](https://github.com/inmanturbo/modelware) pipelines
+This package sends the event data through [pipelines](https://laravel.com/docs/11.x/helpers#pipeline) (similiar to middleware), which iterate through collections of invokable classes, these collections are bound into and resolved from the service container. They can be replaced or overridden in the boot method of a service provider using the following syntax:
 
 ```php
-app()->bind("ecow.{$event}", fn () => collect($pipes));
+app()->bind("ecow.{$event}", function () use ($pipes) {
+    return collect($pipes)->map(fn ($pipe) => app($pipe));
+});
 ```
 
 Where the `{$event}` is a [wildcard event](https://laravel.com/docs/11.x/events#wildcard-event-listeners) for eloquent:
@@ -240,19 +242,41 @@ public function boot() {
 This package will send the following data object through your custom pipeline:
 
 ```php
-$data = (object) [
+use Inmanturbo\Modelware\Data;
+
+$data = app(Data::class, [
     'event' => $events,
-    'model' => $model,
-    'attributes' => $this->getAttributes($model),
-    'guid' => $this->getModelGuid($model),
-    'key' => $model->uuid ?? ($model->getKey() ?? null),
-    'halt' => false,
+    'model' => $payload[0],
+    'payload' => $payload,
+]);
+```
+
+It's recommended you use start your pipeline with the following defaults:
+
+```php
+[
+    \Inmanturbo\Ecow\Pipeline\InitializeData::class,
+    \Inmanturbo\Ecow\Pipeline\EnsureModelShouldBeSaved::class,
+    \Inmanturbo\Ecow\Pipeline\EnsureModelIsNotSavedModel::class,
+    \Inmanturbo\Ecow\Pipeline\EnsureEventsAreNotReplaying::class,
+    \Inmanturbo\Ecow\Pipeline\EnsureModelIsNotBeingSaved::class,
+
+    // custom classes here
+
 ];
+```
+
+You can also override individual pipes:
+
+```php
+
+app()->bind(\Inmanturbo\Ecow\Pipeline\InitializeData::class, \App\Pipeline\InitializeData::class)
+
 ```
 
 ### Disabling the Ecow Event listeners
 
-You can disable ecow listeners at run time with `Ecow::disable()`
+You can disable ecow listeners at runtime with `Ecow::disable()`
 
 ```php
 use Inmanturbo\Ecow\Facades\Ecow;
@@ -281,7 +305,7 @@ return [
 
 ### A note on model keys
 
-The practice used here is event sourcing, which is best served by using `uuids`, or `guids`, as the model's id could not otherwise be known or globally identifiable, prior to it being committed to the database. However, for convenience, standard auto-incrementing keys are supported by the package, by backfilling the auto-incremented key on the creating event if there is no `uuid`, after the model is created. This requires the package to create the model itself and halt the creating event by returning `false`. The package will also store a guid property in its own table whenever a model is first created. Otherwise updating stored event history is usually a big no-no and is it's definately not recommended. It is only done by the package on creating/created as a workaround.
+The practice used here is event sourcing, which is best served by using `uuids`, or `guids`, as the model's id could not otherwise be known or globally identifiable, prior to it being committed to the database. However, for convenience, standard auto-incrementing keys are supported by the package, by backfilling the auto-incremented key on the creating event if there is no `uuid`, after the model is created. This requires the package to create the model itself and halt the creating event by returning `false`. The package will also store a guid property in its own table whenever a model is first created. Otherwise updating stored event history is usually a big no-no and it's definately not recommended. It is only done by the package on creating/created as a workaround.
 
 Also supported, and perhaps the most preferred is using both a `uuid` and (auto incremented) `id` column on your models' tables. Whenever a column called `uuid` is used, `$model->uuid` will be used by the package instead of `$model->getKey()` for recording model versions.
 
