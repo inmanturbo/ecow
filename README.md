@@ -213,7 +213,7 @@ return [
 ];
 ```
 
-### Overriding the `modelware` pipelines
+### Overriding the [`modelware`](https://github.com/inmanturbo/modelware) pipelines
 This package sends the event data through [pipelines](https://laravel.com/docs/11.x/helpers#pipeline) (similiar to middleware), which iterate through collections of invokable classes, these collections are bound into and resolved from the service container. They can be replaced or overridden in the boot method of a service provider using the following syntax:
 
 ```php
