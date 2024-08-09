@@ -14,7 +14,7 @@ All notable changes to `ecow` will be documented in this file.
 
 ### What's Changed
 
-* Remove unused directories leftover form the skeleton by @inmanturbo in https://github.com/inmanturbo/ecow/pull/2
+* Remove unused directories leftover from the skeleton by @inmanturbo in https://github.com/inmanturbo/ecow/pull/2
 
 **Full Changelog**: https://github.com/inmanturbo/ecow/compare/v1.0.1...v1.0.2
 
