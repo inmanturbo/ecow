@@ -120,6 +120,10 @@ class Ecow
 
     public function retrieveModel(mixed $model): mixed
     {
+        if (! $model) {
+            return null;
+        }
+
         $model = clone $model;
 
         $attributes = ($snapshot = $this->snapshots($model)
