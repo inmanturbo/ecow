@@ -115,7 +115,7 @@ class Ecow
             ->where('key', $model->getKey())
             ->where('property', 'guid')
             ->orderBy('model_version')
-            ->first()->value ?? (string) str()->ulid();
+            ->first()->value ?? $model->getKey();
     }
 
     public function retrieveModel(mixed $model): mixed
