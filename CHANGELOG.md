@@ -2,6 +2,14 @@
 
 All notable changes to `ecow` will be documented in this file.
 
+## v1.0.3 - 2024-08-09
+
+### What's Changed
+
+* support using Illuminate\Database\Eloquent\Concerns\HasUuids as primary key by @inmanturbo in https://github.com/inmanturbo/ecow/pull/3
+
+**Full Changelog**: https://github.com/inmanturbo/ecow/compare/v1.0.2...v1.0.3
+
 ## v1.0.2 - 2024-08-08
 
 ### What's Changed
