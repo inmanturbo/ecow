@@ -14,16 +14,15 @@ class StoreSavedModels
     public function __invoke($data, Closure $next)
     {
         DB::transaction(function () use (&$data) {
-            $model = $data->model;
 
-            foreach ($data->model->getDirty() as $key => $value) {
+            foreach ($data->model->getDirty() as $property => $value) {
                 $savedModel = Ecow::modelClass()::create([
                     'event' => (string) str()->of($data->event)->before(':'),
                     'model_version' => Ecow::getNextModelVersion($data->model),
                     'key' => $data->key,
                     'model' => $data->model->getMorphClass(),
                     'values' => $data->attributes,
-                    'property' => $key,
+                    'property' => $property,
                     'value' => $value,
                 ]);
 

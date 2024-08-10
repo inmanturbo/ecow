@@ -123,8 +123,6 @@ class Ecow
         if(! $model) {
             return null;
         }
-        
-        $model = clone $model;
 
         $attributes = ($snapshot = $this->snapshots($model)
             ->where('model_version', $this->modelVersion($model))
