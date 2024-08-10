@@ -120,7 +120,7 @@ class Ecow
 
     public function retrieveModel(mixed $model): mixed
     {
-        if(! $model) {
+        if (! $model) {
             return null;
         }
 

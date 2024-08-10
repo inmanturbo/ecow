@@ -2,6 +2,14 @@
 
 All notable changes to `ecow` will be documented in this file.
 
+## v1.0.4 - 2024-08-09
+
+### What's Changed
+
+* Return null if no model by @inmanturbo in https://github.com/inmanturbo/ecow/pull/4
+
+**Full Changelog**: https://github.com/inmanturbo/ecow/compare/v1.0.3...v1.0.4
+
 ## v1.0.3 - 2024-08-09
 
 ### What's Changed
